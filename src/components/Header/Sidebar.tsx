@@ -1,35 +1,28 @@
 import styled, { css } from 'styled-components';
 
-interface Props {
-  isShown: boolean;
-  clickHandle: () => void;
-}
-
-const Backdrop = styled.div`
-  position: absolute;
-  display: none;
-  visibility: hidden;
+const Sidebar = styled.div`
+  display: flex;
+  position: fixed;
   top: 0;
   left: 0;
-  content: '';
-  width: 100%;
+  width: 276px;
   height: 100%;
-  background: rgba(35, 35, 35, 0.82);
-  transition: 0.25s ease;
-  opacity: 0;
-  z-index: 1;
+  flex-direction: column;
+  padding: 66px 20px;
+  background: #2c2c2c;
+  color: #fff;
+  transition: transform 0.25s ease;
+  will-change: transform;
+  transform: translateX(-100%);
+  overflow-y: auto;
+  z-index: 6;
   ${(props: { isShown: boolean }) =>
     props.isShown
       ? css`
-          display: block;
-          visibility: visible;
-          opacity: 1;
+          transform: translateX(0);
+          box-shadow: -0.125rem 0 1.25rem 0 #343851;
         `
       : ``};
 `;
-
-const Sidebar = ({ isShown, clickHandle }: Props) => {
-  return <Backdrop isShown={isShown} onClick={clickHandle} />;
-};
 
 export default Sidebar;

@@ -1,13 +1,40 @@
-import {Outlet, useRoutes} from 'react-router-dom'
-import {lazy} from "react";
+import { useRoutes } from 'react-router-dom';
 
-const Empty = lazy(() => import('./.'))
+import { lazy, Suspense } from 'react';
+import Spinner from './components/Spinner';
 
-
+const Empty = lazy(() => import('./components/EmptyPage'));
+const Gallery = lazy(() => import('./components/Gallery'));
+const NotFound = lazy(() => import('./components/NotFound'));
 
 const routes = [
-    {
-        path: '',
-        element:
-    }
-]
+  {
+    path: '',
+    element: (
+      <Suspense fallback={<Spinner />}>
+        <Empty />
+      </Suspense>
+    )
+  },
+  {
+    path: ':categoryName',
+    element: (
+      <Suspense fallback={<Spinner />}>
+        <Gallery />
+      </Suspense>
+    )
+  },
+  {
+    element: (
+      <Suspense fallback={<Spinner />}>
+        <NotFound />
+      </Suspense>
+    )
+  }
+];
+
+function Router() {
+  return useRoutes(routes);
+}
+
+export default Router;

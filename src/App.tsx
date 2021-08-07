@@ -1,58 +1,82 @@
-import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
-import './App.css';
+import React, { useState, FC, useEffect } from 'react';
+import Header from './components/Header/Header';
+import Container from './components/Container';
+import Overlay from './components/Overlay';
+import { GalleryWrapper } from './components/GalleryWrapper';
+import Router from './Routes';
+import Fetcher from './features/counter/Fetcher';
+import { useMatch, useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+import { useAppDispatch } from './app/hooks';
+import {setLimit, setPage} from './features/counter/counterSlice';
 
-function App() {
+const ButtonWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  bottom: 10px;
+  width: 100%;
+
+  &&& button {
+    padding: 8px 15px;
+  }
+`;
+
+const App: FC = () => {
+  const [isShown, setIsShown] = useState(false);
+  const navigate = useNavigate();
+  const match = useMatch('/');
+  const dispatch = useAppDispatch();
+  const [currentLimit, setCurrentLimit] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    navigate('/');
+  }, []);
+
+  const toggle = () => {
+    setIsShown(!isShown);
+    updateBodyStyles();
+  };
+
+  const updateBodyStyles = (): void => {
+    if (isShown) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'visible';
+    }
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
+    <div>
+      <Fetcher>
+        <Header clickHandle={toggle} isShown={isShown} />
+        <Container>
+          <div style={{ paddingTop: 74 }}>
+            <GalleryWrapper>
+              <Router />
+            </GalleryWrapper>
+            <ButtonWrapper>
+              {!match && (
+                <button
+                  onClick={() => {
+                    setCurrentLimit(prev => prev + 10);
+                    setCurrentPage(prev => prev + 1);
+                    dispatch(setLimit(String(currentLimit)));
+                    dispatch(setPage(String(currentPage)));
+                  }}
+                >
+                  Load More
+                </button>
+              )}
+            </ButtonWrapper>
+          </div>
+        </Container>
+        <Overlay clickHandle={toggle} isShown={isShown} />
+      </Fetcher>
     </div>
   );
-}
+};
 
 export default App;
